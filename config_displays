@@ -4,7 +4,8 @@
 
 set -x
 # Select display
-output=$(printf "LVDS-1\\nHDMI-1\\nVGA-1" | dmenu -i -p "$1") 
+display=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
+output=$(printf $display | dmenu -i -p "Display mode")
 if [ "$output" = "LVDS-1" ]; then
 	xrandr | awk '/LVDS-1/{v=1}/VGA-1/{v=0}v' > ~/displays.txt
 elif [ "$output" = "HDMI-1" ]; then
@@ -34,5 +35,5 @@ else
 fi
 
 # Auto config for broken display
-prompt "Auto config?" "xrandr --output $output --auto"
+[ "$(printf "No\\nYes" | dmenu -i -p "Auto config?")" = "Yes" ] && xrandr --output $output --auto
 set +x
