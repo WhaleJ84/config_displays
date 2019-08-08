@@ -1,0 +1,38 @@
+#!/bin/sh
+# A dmenu script that grabs xrandr values and displays available
+# options for monitor configurations.
+
+set -x
+# Select display
+output=$(printf "LVDS-1\\nHDMI-1\\nVGA-1" | dmenu -i -p "$1") 
+if [ "$output" = "LVDS-1" ]; then
+	xrandr | awk '/LVDS-1/{v=1}/VGA-1/{v=0}v' > ~/displays.txt
+elif [ "$output" = "HDMI-1" ]; then
+	xrandr | awk '/HDMI-1/{v=1}/DP-1/{v=0}v' > ~/displays.txt
+elif [ "$output" = "VGA-1" ]; then
+	xrandr | awk '/VGA-1/{v=1}/HDMI-1/{v=0}v' > ~/displays.txt
+else
+	exit
+fi
+
+# Select resolution
+res=$(list_grab ~/displays.txt | sort -n -r | dmenu -i -p "Resolutions") 
+if [ "${#res[*]}" -gt 6 ]; then
+	if [ "$output" = "LVDS-1" ]; then
+		xrandr --output $output --mode $res
+	# Select screen position
+	elif [ "$output" != "LVDS-1" ]; then
+		pos=$(printf "left-of\\nright-of\\nabove\\nbelow\\nsame-as\\noff" | dmenu -i -p "Position")
+		if [ "$pos" = "off" ]; then
+			xrandr --output $output --$pos
+		elif [ "$pos" != "off" ]; then
+			xrandr --output $output --mode $res --$pos LVDS-1
+		fi
+	fi
+else
+	exit
+fi
+
+# Auto config for broken display
+prompt "Auto config?" "xrandr --output $output --auto"
+set +x
