@@ -1,5 +1,7 @@
 # config_displays
 
+![Demo](config_displays_demo.gif)
+
 A simple shell script that allows the user to create xrandr commands through dmenu.
 
 ## Dependencies
