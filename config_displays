@@ -1,33 +1,36 @@
 #!/bin/sh
-# A dmenu script that grabs xrandr values and displays available
-# options for monitor configurations.
 
-set -x
-# Select display
+primary=$(xrandr | grep primary | awk '{print $1}')
 display=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
 output=$(printf $display | dmenu -i -p "Display mode")
-if [ "$output" = "LVDS-1" ]; then
-	xrandr | awk '/LVDS-1/{v=1}/VGA-1/{v=0}v' > ~/displays.txt
-elif [ "$output" = "HDMI-1" ]; then
-	xrandr | awk '/HDMI-1/{v=1}/DP-1/{v=0}v' > ~/displays.txt
-elif [ "$output" = "VGA-1" ]; then
-	xrandr | awk '/VGA-1/{v=1}/HDMI-1/{v=0}v' > ~/displays.txt
+if [ "$output" ]; then
+	fin=$(printf "$display" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/')
+	# TODO:
+	# Create an if statement to see if last item has been chosen.
+	# Or turn $display into an array.
+	resolutions=$(xrandr | awk '/'$output'/{v=1}/'$fin'/{v=0}v' | sed -n '1!p' | sort -n -r | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g') 2>/dev/null
+	echo $resolutions
+	if [ "$resolutions" = "" ];then
+		printf "No resolutions found" | dmenu -p "Resolutions"
+		exit
+	fi
 else
 	exit
 fi
 
-# Select resolution
-res=$(list_grab ~/displays.txt | sort -n -r | dmenu -i -p "Resolutions") 
+res=$(printf $resolutions | dmenu -i -p "Resolutions")
 if [ "${#res[*]}" -gt 6 ]; then
-	if [ "$output" = "LVDS-1" ]; then
+	if [ "$output" = "$primary" ]; then
+#		echo primary
 		xrandr --output $output --mode $res
-	# Select screen position
-	elif [ "$output" != "LVDS-1" ]; then
+		# Select screen position
+	else
+#		echo secondary
 		pos=$(printf "left-of\\nright-of\\nabove\\nbelow\\nsame-as\\noff" | dmenu -i -p "Position")
 		if [ "$pos" = "off" ]; then
 			xrandr --output $output --$pos
 		elif [ "$pos" != "off" ]; then
-			xrandr --output $output --mode $res --$pos LVDS-1
+			xrandr --output $output --mode $res --$pos $primary
 		fi
 	fi
 else
@@ -36,4 +39,3 @@ fi
 
 # Auto config for broken display
 [ "$(printf "No\\nYes" | dmenu -i -p "Auto config?")" = "Yes" ] && xrandr --output $output --auto
-set +x
