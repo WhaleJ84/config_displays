@@ -20,7 +20,7 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 ## Future plans
 
 - Pressing escape sends you back a menu.
-- Only show relevant resolutions; currently not all resolutions are actually valid, depsite xrandr displaying them.
+- Only show relevant resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
 - Code optimisation.
 - More stuff I haven't thought of yet.
 
