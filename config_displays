@@ -4,8 +4,6 @@ primary=$(xrandr | grep primary | awk '{print $1}')
 display=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
 output=$(printf $display | dmenu -i -p "Display mode")
 
-res=1366x768
-
 getaspectratio() {
 	width=$(echo $res | sed 's/x.*//')
 	height=$(echo $res | sed 's/.*x//')
@@ -31,16 +29,14 @@ getaspectratio() {
 	aspectratio=$widthaspect:$heightaspect
 }
 
-getaspectratio
-echo $aspectratio
+getoutputresolutions(){
+	fin=$(printf "$display" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/')
+	outputresolutions=$(xrandr | awk '/'$output'/{v=1}/'$fin'/{v=0}v' | sed -n '1!p' | sort -n -r | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g') 2>/dev/null
+}
+
 
 if [ "$output" ]; then
-	fin=$(printf "$display" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/')
-	# TODO:
-	# Create an if statement to see if last item has been chosen.
-	# Or turn $display into an array.
-	resolutions=$(xrandr | awk '/'$output'/{v=1}/'$fin'/{v=0}v' | sed -n '1!p' | sort -n -r | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g') 2>/dev/null
-	echo $resolutions
+	getoutputresolutions
 	if [ "$resolutions" = "" ];then
 		printf "No resolutions found" | dmenu -p "Resolutions"
 		exit
