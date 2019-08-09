@@ -3,6 +3,37 @@
 primary=$(xrandr | grep primary | awk '{print $1}')
 display=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
 output=$(printf $display | dmenu -i -p "Display mode")
+
+res=1366x768
+
+getaspectratio() {
+	width=$(echo $res | sed 's/x.*//')
+	height=$(echo $res | sed 's/.*x//')
+
+	if [ "$height" -gt "$width" ]; then 
+		dividend=$height
+		divisor=$width
+	else
+		dividend=$width
+		divisor=$height
+	fi
+
+
+	while [ "$divisor" -gt 0 ]; do
+		modulo=$(($dividend%$divisor))
+		dividend=$divisor
+		divisor=$modulo
+		gcd=$dividend
+	done
+
+	widthaspect=$(($width/$gcd))
+	heightaspect=$(($height/$gcd))
+	aspectratio=$widthaspect:$heightaspect
+}
+
+getaspectratio
+echo $aspectratio
+
 if [ "$output" ]; then
 	fin=$(printf "$display" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/')
 	# TODO:

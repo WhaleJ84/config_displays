@@ -24,8 +24,8 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 ## Future plans
 
 - Options to go back a menu.
-- Only show relevant resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
-- Use an algorithm to determine aspect ratio rather than comparing against an additional document.
+- Show relevant resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
+- Improve aspect ratio algorithm to work better with weird ratio resolutions (e.g. 1366x768 returns 683:384)
 - Find a way to filter out outputs xrandr shows but you don't have.
 - Code optimisation.
 - More stuff I haven't thought of yet.
