@@ -37,7 +37,7 @@ getoutputresolutions(){
 
 if [ "$output" ]; then
 	getoutputresolutions
-	if [ "$resolutions" = "" ];then
+	if [ "$outputresolutions" = "" ];then
 		printf "No resolutions found" | dmenu -p "Resolutions"
 		exit
 	fi
@@ -45,7 +45,7 @@ else
 	exit
 fi
 
-res=$(printf $resolutions | dmenu -i -p "Resolutions")
+res=$(printf $outputresolutions | dmenu -i -p "Resolutions")
 if [ "${#res[*]}" -gt 6 ]; then
 	if [ "$output" = "$primary" ]; then
 #		echo primary
