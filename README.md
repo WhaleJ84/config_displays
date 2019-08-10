@@ -27,6 +27,7 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 - Show relevant resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
 - Improve aspect ratio algorithm to work better with weird ratio resolutions (e.g. 1366x768 returns 683:384)
 - Find a way to filter out outputs xrandr shows but you don't have.
+- Countdown for the autoconfig feature in case of broken display.
 - Code optimisation.
 - More stuff I haven't thought of yet.
 
