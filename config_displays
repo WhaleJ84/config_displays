@@ -12,15 +12,18 @@ getdefaults(){
 }
 
 getnextoutput(){
-	nextoutput=$(printf "$displays" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/')
+	nextoutput=$(printf "$displays" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/') 2>/dev/null
 }
 
 getoutputresolutions(){
 	getnextoutput
 	outputresolutions=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | awk '{print $1}')
+	if [ "$outputresolutions" = "" ]; then
+		printf "No resolutions found" | dmenu -p "Resolutions"
+		exit
+	fi
 	query=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | grep + | awk '{print $1}')
 	if [ "$query" = "" ]; then
-		echo "No preferred resolution. Using first result."
 		query=$(echo $outputresolutions | head -1 | awk '{print $1}')
 	fi
 	getaspectratio
@@ -60,7 +63,6 @@ getrelativeresolutions(){
 	for line in $outputresolutions; do
 		query=$line
 		getaspectratio
-		echo $aspectratio
 		if [ "$aspectratio" = "$preferredratio" ]; then
 			relativeresolutions="$relativeresolutions$line"\\n
 		fi
@@ -68,30 +70,15 @@ getrelativeresolutions(){
 	done
 }
 
+selectoutput(){
 getdefaults
-output=$(printf $displays | dmenu -i -p "Display mode")
-
-if [ "$output" ]; then
-	if [ "$output" != "$primary" ]; then
-		echo "Non-primary display. Getting default aspect ratio."	
-	fi
-	getrelativeresolutions
-	sanitiseforprintf
-	if [ "$dmenuitems" = "" ]; then
-		printf "No resolutions found" | dmenu -p "Resolutions"
-		exit
-	fi
-else
+output=$(printf $displays | dmenu -i -p "Outputs")
+if [ "$output" = "" ]; then
 	exit
 fi
+}
 
-res=$(printf $dmenuitems | dmenu -i -p "Resolutions")
-if [ "$res" = "All" ]; then
-	getoutputresolutions
-	dmenuitems=$outputresolutions
-	sanitiseforprintf
-fi
-
+selectresolution(){
 res=$(printf $dmenuitems | dmenu -i -p "Resolutions")
 if [ "${#res[*]}" -gt 6 ]; then
 	if [ "$output" = "$primary" ]; then
@@ -104,9 +91,22 @@ if [ "${#res[*]}" -gt 6 ]; then
 			xrandr --output $output --mode $res --$pos $primary
 		fi
 	fi
+elif [ "$res" = "All" ]; then
+	getoutputresolutions
+	dmenuitems=$outputresolutions
+	sanitiseforprintf
+	selectresolution
 else
 	exit
 fi
+}
+
+selectoutput
+
+getrelativeresolutions
+sanitiseforprintf
+selectresolution
+
 
 # Auto config for broken display
 [ "$(printf "No\\nYes" | dmenu -i -p "Auto config?")" = "Yes" ] && xrandr --output $output --auto

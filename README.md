@@ -1,7 +1,7 @@
 # config_displays
 
 A simple shell script that allows the user to create xrandr commands through dmenu.
-It is currently in a working state but could do with some more polish.
+It is currently in a fully working state but I plan to keep developing it further.
 
 ![Demo](config_displays_demo.gif)
 
@@ -35,7 +35,7 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 
 ### *"The program is showing outputs I don't have; why is this?"*
 
-That is due to xrandr's output and not from my script and I have no idea why it does that. Regardless, no resolutions will display under those outputs and the script will exit shortly after.
+That is due to xrandr's output, not from my script, and I have no idea why it does that. Regardless, no resolutions will display under those outputs and the script will exit shortly after. A future plan is to devise a way to remove those phantom displays.
 
 ### *"The program is showing resolutions that doesn't work; why is that?"*
 
