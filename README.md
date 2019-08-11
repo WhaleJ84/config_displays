@@ -5,7 +5,7 @@ It is currently in a working state but could do with some more polish.
 
 ![Demo](config_displays_demo.gif)
 
-The demo does not demonstrate resolutions changing as I cannot find a screen recorder that works across resolution changes but trust me, it works. At least for me.
+The demo does not demonstrate resolutions changing as I cannot find a screen recorder that works across resolution changes but it works. Some debug information is left on in the demonstration to show the aspect ratio algorithm in play - this is turned off in the release.
 
 ## Dependencies
 
@@ -25,7 +25,7 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 
 - Options to go back a menu.
 - Show relevant resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
-- Improve aspect ratio algorithm to work better with weird ratio resolutions (e.g. 1366x768 returns 683:384)
+- Improve aspect ratio algorithm to work better with weird ratio resolutions (e.g. 1366x768 returns 683:384, as shown in demo.)
 - Find a way to filter out outputs xrandr shows but you don't have.
 - Countdown for the autoconfig feature in case of broken display.
 - Code optimisation.
@@ -36,6 +36,10 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 ### *"The program is showing outputs I don't have; why is this?"*
 
 That is due to xrandr's output and not from my script and I have no idea why it does that. Regardless, no resolutions will display under those outputs and the script will exit shortly after.
+
+### *"The program is showing resolutions that doesn't work; why is that?"*
+
+Again, that is also due to xrandr. I have tried to negate this by adding the aspect ratio function but futher down the line I will try to remove resolutions that outright don't work. When I tried those resolutions on my machine, xrandr didn't do anything anyway.
 
 ### *"I've noticed a bug or have some improvements to your code, what should I do?"*
 
