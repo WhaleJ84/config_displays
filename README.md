@@ -21,10 +21,19 @@ If you just want to test out the script then you can cd to where it resides and 
 Optionally, I bound one of my FN keys on my laptop to run the command to make the function more accessible. I achieved this by adding: 
 `bindsym XF86Display exec --no-startup-id config_displays "Display Mode"` to my i3 config ($HOME/.config/i3/config), change to a key of your preference and it should work fine.
 
+## Features
+
+- Entirely self-contained within one script, with no need to create external files.
+- Dynamically fetches outputs and resolutions, allowing for compatability across multiple systems.
+- Includes aspect ratio alrogithm to figure out the ratio of any resolution, something that xrandr does not do.
+- Only shows relevant resolutions on first pass, presenting the user with resolutions in their default aspect ratio.
+- Provides positional options for non-primary displays and the ability to turn off those displays.
+- An autoconfig option to use xrandr's recommended options for said output.
+
 ## Future plans
 
 - Options to go back a menu.
-- Show relevant resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
+- Show compatable resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
 - Improve aspect ratio algorithm to work better with weird ratio resolutions (e.g. 1366x768 returns 683:384, as shown in demo.)
 - Find a way to filter out outputs xrandr shows but you don't have.
 - Countdown for the autoconfig feature in case of broken display.
