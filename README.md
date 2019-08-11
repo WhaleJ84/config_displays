@@ -39,7 +39,7 @@ That is due to xrandr's output and not from my script and I have no idea why it 
 
 ### *"The program is showing resolutions that doesn't work; why is that?"*
 
-Again, that is also due to xrandr. I have tried to negate this by adding the aspect ratio function but futher down the line I will try to remove resolutions that outright don't work. When I tried those resolutions on my machine, xrandr didn't do anything anyway.
+Again, that is also due to xrandr. I have tried to negate this by adding the aspect ratio function but further down the line I will try to remove resolutions that outright don't work. When I tried those resolutions on my machine, xrandr didn't do anything anyway.
 
 ### *"I've noticed a bug or have some improvements to your code, what should I do?"*
 
