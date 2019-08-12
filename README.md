@@ -16,7 +16,7 @@ The demo does not demonstrate resolutions changing as I cannot find a screen rec
 
 Move config_displays to your desired location within $PATH (I use $HOME/bin/), ensure script has execute permissions (use `chmod +x config_displays` if not) and run the command through the terminal.
 
-If you just want to test out the script then you can cd to where it resides and run it with `./config_displays` without you having to have it in your $PATH.
+If you just want to test out the script then you can cd to where it resides and run it with `./config_displays` without needing it in your $PATH.
 
 Optionally, I bound one of my FN keys on my laptop to run the command to make the function more accessible. I achieved this by adding: 
 `bindsym XF86Display exec --no-startup-id config_displays "Display Mode"` to my i3 config ($HOME/.config/i3/config), change to a key of your preference and it should work fine.
@@ -24,16 +24,17 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 ## Features
 
 - Entirely self-contained within one script, with no need to create external files.
-- Dynamically fetches outputs and resolutions, allowing for compatability across multiple systems.
-- Includes aspect ratio alrogithm to figure out the ratio of any resolution, something that xrandr does not do.
+- Dynamically fetches outputs and resolutions, allowing for compatibility across multiple systems.
+- Includes aspect ratio algorithm to figure out the ratio of any resolution, something that xrandr does not do.
 - Only shows relevant resolutions on first pass, presenting the user with resolutions in their default aspect ratio.
 - Provides positional options for non-primary displays and the ability to turn off those displays.
 - An autoconfig option to use xrandr's recommended options for said output.
+- Isn't hindered by interlaced resolutions (e.g. 1920x1080i, as shown in the demo.) 
 
 ## Future plans
 
 - Options to go back a menu.
-- Show compatable resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
+- Show compatible resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
 - Improve aspect ratio algorithm to work better with weird ratio resolutions (e.g. 1366x768 returns 683:384, as shown in demo.)
 - Find a way to filter out outputs xrandr shows but you don't have.
 - Countdown for the autoconfig feature in case of broken display.
@@ -44,7 +45,7 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 
 ### *"The program is showing outputs I don't have; why is this?"*
 
-That is due to xrandr's output, not from my script, and I have no idea why it does that. Regardless, no resolutions will display under those outputs and the script will exit shortly after. A future plan is to devise a way to remove those phantom displays.
+That is due to xrandr's output, not from my script and from what I can surmise, it gets those outputs from /sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0\* or somewhere similar. Regardless, no resolutions will display under those outputs and the script will exit shortly after. A future plan is to devise a way to remove those phantom displays.
 
 ### *"The program is showing resolutions that doesn't work; why is that?"*
 
