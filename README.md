@@ -23,7 +23,7 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 
 ## Features
 
-- ~~Entirely self-contained within one script, with no need to create external files.~~ Only uses one additonal file needed to confirm abnormal aspect ratios. Wil be removed if I can find a more efficient solution. 
+- ~~Entirely self-contained within one script, with no need to create external files.~~ Only uses one additonal file needed to confirm abnormal aspect ratios. Will be removed if I can find a more efficient solution. 
 - Dynamically fetches outputs and resolutions, allowing for compatibility across multiple systems.
 - Includes aspect ratio algorithm to figure out the ratio of any resolution, something that xrandr does not do.
 - Only shows relevant resolutions on first pass, presenting the user with resolutions in their default aspect ratio.
