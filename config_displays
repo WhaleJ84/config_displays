@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#set -x
-
 getdefaults(){
 	displays=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
 	primary=$(xrandr | grep primary | awk '{print $1}')
@@ -82,16 +80,19 @@ getrelativeresolutions(){
 }
 
 correctaspectratio(){
-		if [ "$aspectratio" != "3:2" -a "$aspectratio" != "4:3" -a "$aspectratio" != "5:4" -a "$aspectratio" != "16:9" -a "$aspectratio" != "16:10" ]; then
-			echo "Non-standard aspect ratio detected: '$aspectratio'."
-			echo "Searching for: $query"
-			aspectratio=$(grep $query resolutions | cut -f2 -d"|")
-			if [ -z "$aspectratio" ]; then
-				echo "Resolution not found in file. Ignoring."
-			else
-				echo "New ratio applied: '$aspectratio'"
-			fi
+	if [ "$aspectratio" != "3:2" -a "$aspectratio" != "4:3" -a "$aspectratio" != "5:4" -a "$aspectratio" != "16:9" -a "$aspectratio" != "16:10" ]; then
+		echo "Non-standard aspect ratio detected: '$aspectratio'."
+		echo "Searching for: $query"
+		if [ -z "$resolutions" ]; then
+			resolutions=$(locate config_displays_resolutions | grep -v .swp)
 		fi
+		aspectratio=$(grep $query $resolutions | cut -f2 -d"|")
+		if [ -z "$aspectratio" ]; then
+			echo "Resolution not found in file. Ignoring."
+		else
+			echo "New ratio applied: '$aspectratio'"
+		fi
+	fi
 }
 
 selectoutput(){
@@ -134,5 +135,3 @@ selectresolution
 
 # Auto config for broken display
 [ "$(printf "No\\nYes" | dmenu -i -p "Auto config?")" = "Yes" ] && xrandr --output $output --auto
-
-#set +x

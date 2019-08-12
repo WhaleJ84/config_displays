@@ -5,7 +5,7 @@ It is currently in a fully working state but I plan to keep developing it furthe
 
 ![Demo](config_displays_demo.gif)
 
-The demo does not demonstrate resolutions changing as I cannot find a screen recorder that works across resolution changes but it works. Some debug information is left on in the demonstration to show the aspect ratio algorithm in play - this is turned off in the release.
+The demo does not show resolutions changing as I cannot find a screen recorder that works across resolution changes but it works. Some debug information is left on in the demonstration to show the aspect ratio algorithm in play - this is turned off in the release.
 
 ## Dependencies
 
@@ -23,7 +23,7 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 
 ## Features
 
-- Entirely self-contained within one script, with no need to create external files.
+- ~~Entirely self-contained within one script, with no need to create external files.~~ Only uses one additonal file needed to confirm abnormal aspect ratios. Wil be removed if I can find a more efficient solution. 
 - Dynamically fetches outputs and resolutions, allowing for compatibility across multiple systems.
 - Includes aspect ratio algorithm to figure out the ratio of any resolution, something that xrandr does not do.
 - Only shows relevant resolutions on first pass, presenting the user with resolutions in their default aspect ratio.
@@ -35,7 +35,7 @@ Optionally, I bound one of my FN keys on my laptop to run the command to make th
 
 - Options to go back a menu.
 - Show compatible resolutions; currently not all resolutions are actually valid, despite xrandr displaying them.
-- Improve aspect ratio algorithm to work better with weird ratio resolutions (e.g. 1366x768 returns 683:384, as shown in demo.)
+- Improve aspect ratio algorithm to work better with weird ratio resolutions (e.g. 1366x768 returns 683:384, as shown in demo.) without the need for an additional file to compare against.
 - Find a way to filter out outputs xrandr shows but you don't have.
 - Countdown for the autoconfig feature in case of broken display.
 - Code optimisation.
