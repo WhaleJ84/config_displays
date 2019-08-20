@@ -97,6 +97,14 @@ correctaspectratio(){
 	fi
 }
 
+countdown(){
+	sec=10
+	while [ $sec -gt 0 -a $1 != "stop" ]; do
+		sec=$( echo "$sec-1" | bc )
+		sleep 1
+	done
+}
+
 selectoutput(){
 	getdefaults
 	output=$(printf $displays | dmenu -i -p "Outputs")
@@ -134,8 +142,13 @@ getrelativeresolutions
 sanitiseforprintf
 selectresolution
 
-
+countdown start &
 # Auto config for broken display
-[ "$(printf "No\\nYes" | dmenu -i -p "Auto config?")" = "Yes" ] && xrandr --output $output --auto
-
+autoconfig=$(printf "No\\nYes" | dmenu -i -p "Auto config?")
+if [ "$autoconfig" = "Yes" -o "$sec" -eq 0 ]; then
+       	xrandr --output $output --auto
+elif [ "$autoconfig" = "No" ]; then
+	countdown stop
+	exit
+fi
 set +x

@@ -5,12 +5,14 @@ It is currently in a fully working state but I plan to keep developing it furthe
 
 ![Demo](config_displays_demo.gif)
 
-The demo does not show resolutions changing as I cannot find a screen recorder that works across resolution changes but it works. Some debug information is left on in the demonstration to show the aspect ratio algorithm in play - this is turned off in the release.
+The demo does not show resolutions changing as I cannot find a screen recorder that works across resolution changes but it works. Some debug information is left on in the demonstration to show the aspect ratio algorithm in play - this is removed in the release.
 
 ## Dependencies
 
 - dmenu
+	- suckless-tools (ubuntu)
 - xrandr
+	- x11-xserver-utils (ubuntu)
 
 ## Install
 
@@ -45,6 +47,11 @@ If you have superuser privileges, you can update it manually by running `sudo up
 - Countdown for the autoconfig feature in case of broken display.
 - Code optimisation.
 - More stuff I haven't thought of yet.
+
+## Questionable design choices
+
+- Assigning config_displays_resolutions to a variable and using the locate command:
+	- I made this decision as testing showed that when the script is ran through the use of a shortcut rather than through the command-line would result in the getrelativeresolutions function returning incorrect results. I tried many different ways to overcome this issue and this fix worked.
 
 ## Assumed F.A.Q's
 
