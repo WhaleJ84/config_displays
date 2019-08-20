@@ -1,5 +1,7 @@
 #!/bin/sh
 
+DEBUG=1
+
 getdefaults(){
 	displays=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
 	primary=$(xrandr | grep primary | awk '{print $1}')
@@ -23,14 +25,9 @@ getpreferredresolution(){
 getoutputresolutions(){
 	getnextoutput
 	outputresolutions=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | awk '{print $1}')
-	if [ -z "$outputresolutions" ]; then
-		printf "No resolutions found" | dmenu -p "Resolutions"
-		exit
-	fi
+	[ -z "$outputresolutions" ] && printf "No resolutions found" | dmenu -p "Resolutions" && exit
 	query=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | grep + | awk '{print $1}')
-	if [ -z "$query" ]; then
-		query=$(echo $outputresolutions | head -1 | awk '{print $1}')
-	fi
+	[ -z "$query" ] && query=$(echo $outputresolutions | head -1 | awk '{print $1}')
 	getpreferredresolution
 	preferredres=$resolution
 	getaspectratio
@@ -72,25 +69,21 @@ getrelativeresolutions(){
 		query=$line
 		getaspectratio
 		correctaspectratio
-		if [ "$aspectratio" = "$preferredratio" ]; then
-			relativeresolutions="$relativeresolutions$line"\\n
-		fi
+		[ "$aspectratio" = "$preferredratio" ] && relativeresolutions="$relativeresolutions$line"\\n
 		dmenuitems="$relativeresolutions"All
 	done
 }
 
 correctaspectratio(){
 	if [ "$aspectratio" != "3:2" -a "$aspectratio" != "4:3" -a "$aspectratio" != "5:4" -a "$aspectratio" != "16:9" -a "$aspectratio" != "16:10" ]; then
-		echo "Non-standard aspect ratio detected: '$aspectratio'."
-		echo "Searching for: $query"
-		if [ -z "$resolutions" ]; then
-			resolutions=$(locate config_displays_resolutions | grep -v .swp)
-		fi
+		[ "$DEBUG" = "1" ] && echo "Non-standard aspect ratio detected: '$aspectratio'."
+		[ "$DEBUG" = "1" ] && echo "Searching for: $query"
+		[ -z "$resolutions" ] && resolutions=$(locate config_displays_resolutions | grep -v .swp)
 		aspectratio=$(grep $query $resolutions | cut -f2 -d"|")
 		if [ -z "$aspectratio" ]; then
-			echo "Resolution not found in file. Ignoring."
+			[ "$DEBUG" = "1" ] && echo "Resolution not found in file. Ignoring."
 		else
-			echo "New ratio applied: '$aspectratio'"
+			[ "$DEBUG" = "1" ] && echo "New ratio applied: '$aspectratio'"
 		fi
 	fi
 }
@@ -98,9 +91,7 @@ correctaspectratio(){
 selectoutput(){
 	getdefaults
 	output=$(printf $displays | dmenu -i -p "Outputs")
-	if [ -z "$output" ]; then
-		exit
-	fi
+	[ -z "$output" ] && exit
 }
 
 selectresolution(){
@@ -127,11 +118,9 @@ selectresolution(){
 }
 
 selectoutput
-
 getrelativeresolutions
 sanitiseforprintf
 selectresolution
-
 
 # Auto config for broken display
 [ "$(printf "No\\nYes" | dmenu -i -p "Auto config?")" = "Yes" ] && xrandr --output $output --auto
