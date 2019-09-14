@@ -25,7 +25,7 @@ getpreferredresolution(){
 getoutputresolutions(){
 	getnextoutput
 	outputresolutions=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | awk '{print $1}')
-	[ -z "$outputresolutions" ] && printf "No resolutions found" | dmenu -p "Resolutions" && exit
+	[ -z "$outputresolutions" ] && [ "$(printf "No\\nYes" | dmenu -i -p "No resolutions found. Turn off display?")" = "Yes" ] && xrandr --output $output --off && exit
 	query=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | grep + | awk '{print $1}')
 	[ -z "$query" ] && query=$(echo $outputresolutions | head -1 | awk '{print $1}')
 	getpreferredresolution
