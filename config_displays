@@ -1,122 +1,143 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-DEBUG=1
-
-getdefaults(){
-	displays=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
-	primary=$(xrandr | grep primary | awk '{print $1}')
-	output=$primary
-	getnextoutput
-	getpreferredresolution
-	primaryprefres=$resolution
-	query=$primaryprefres
-	getaspectratio
-	primaryprefratio=$aspectratio
-}
+#DEBUG=1
 
 getnextoutput(){
-	nextoutput=$(printf "$displays" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/') 2>/dev/null
+    nextoutput=$(printf "$displays" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/') 2>/dev/null
 }
 
 getpreferredresolution(){
-	resolution=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | grep + | awk '{print $1}')
+    resolution=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | grep + | awk '{print $1}')
 }
 
 getoutputresolutions(){
-	getnextoutput
-	outputresolutions=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | awk '{print $1}')
-	[ -z "$outputresolutions" ] && [ "$(printf "No\\nYes" | dmenu -i -p "No resolutions found. Turn off display?")" = "Yes" ] && xrandr --output $output --off && exit
-	query=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | grep + | awk '{print $1}')
-	[ -z "$query" ] && query=$(echo $outputresolutions | head -1 | awk '{print $1}')
-	getpreferredresolution
-	preferredres=$resolution
-	getaspectratio
-	correctaspectratio
-	preferredratio=$aspectratio
+    getnextoutput
+    outputresolutions=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | awk '{print $1}')
+    [ -z "$outputresolutions" ] && [ "$(printf "No\\nYes" | dmenu -i -p "No resolutions found. Turn off display?")" = "Yes" ] && xrandr --output $output --off && exit
+    query=$(xrandr | awk '/'$output'/{v=1}/'$nextoutput'/{v=0}v' | sed -n '1!p' | grep + | awk '{print $1}')
+    [ -z "$query" ] && query=$(echo $outputresolutions | head -1 | awk '{print $1}')
+    getpreferredresolution
+    preferredres=$resolution
+    getaspectratio
+    correctaspectratio
+    preferredratio=$aspectratio
 }
 
 sanitiseforprintf(){
-	dmenuitems=$(echo $dmenuitems | sed 's/ /\n/g'  | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
+    dmenuitems=$(echo $dmenuitems | sed 's/ /\n/g'  | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
 }
 
 getaspectratio() {
-	width=$(echo $query | sed 's/x.*//')
-	height=$(echo $query | sed 's/.*x//' | awk '{gsub("[^[:digit:]]+"," "); print $1}') 
+    width=$(echo $query | sed 's/x.*//')
+    height=$(echo $query | sed 's/.*x//' | awk '{gsub("[^[:digit:]]+"," "); print $1}')
 
-	if [ "$height" -gt "$width" ]; then 
-		dividend=$height
-		divisor=$width
-	else
-		dividend=$width
-		divisor=$height
-	fi
+    if [ "$height" -gt "$width" ]; then
+        dividend=$height
+        divisor=$width
+    else
+        dividend=$width
+        divisor=$height
+    fi
 
-	while [ "$divisor" -gt 0 ]; do
-		modulo=$(($dividend%$divisor))
-		dividend=$divisor
-		divisor=$modulo
-		gcd=$dividend
-	done
+    while [ "$divisor" -gt 0 ]; do
+        modulo=$(($dividend%$divisor))
+        dividend=$divisor
+        divisor=$modulo
+        gcd=$dividend
+    done
 
-	widthaspect=$(($width/$gcd))
-	heightaspect=$(($height/$gcd))
-	aspectratio=$widthaspect:$heightaspect # Actually Storage Aspect Ratio, rather than the Display Aspect Ratio we need.
+    widthaspect=$(($width/$gcd))
+    heightaspect=$(($height/$gcd))
+    aspectratio=$widthaspect:$heightaspect # Actually Storage Aspect Ratio, rather than the Display Aspect Ratio we need.
+}
+
+getdefaults(){
+    displays=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
+    primary=$(xrandr | grep primary | awk '{print $1}')
+    output=$primary
+    getnextoutput
+    getpreferredresolution
+    primaryprefres=$resolution
+    query=$primaryprefres
+    getaspectratio
+    primaryprefratio=$aspectratio
 }
 
 getrelativeresolutions(){
-	getoutputresolutions
-	for line in $outputresolutions; do
-		query=$line
-		getaspectratio
-		correctaspectratio
-		[ "$aspectratio" = "$preferredratio" ] && relativeresolutions="$relativeresolutions$line"\\n
-		dmenuitems="$relativeresolutions"All
-	done
+    getoutputresolutions
+    for line in $outputresolutions; do
+        query=$line
+        getaspectratio
+        correctaspectratio
+        [ "$aspectratio" = "$preferredratio" ] && relativeresolutions="$relativeresolutions$line"\\n
+        dmenuitems="$relativeresolutions"All
+    done
 }
 
 correctaspectratio(){
-	if [ "$aspectratio" != "3:2" -a "$aspectratio" != "4:3" -a "$aspectratio" != "5:4" -a "$aspectratio" != "16:9" -a "$aspectratio" != "16:10" ]; then
-		[ "$DEBUG" = "1" ] && echo "Non-standard aspect ratio detected: '$aspectratio'."
-		[ "$DEBUG" = "1" ] && echo "Searching for: $query"
-		[ -z "$resolutions" ] && resolutions=$(locate config_displays_resolutions | grep -v .swp)
-		aspectratio=$(grep $query $resolutions | cut -f2 -d"|")
-		if [ -z "$aspectratio" ]; then
-			[ "$DEBUG" = "1" ] && echo "Resolution not found in file. Ignoring."
-		else
-			[ "$DEBUG" = "1" ] && echo "New ratio applied: '$aspectratio'"
-		fi
-	fi
+    if [ "$aspectratio" != "3:2" -a "$aspectratio" != "4:3" -a "$aspectratio" != "5:4" -a "$aspectratio" != "16:9" -a "$aspectratio" != "16:10" ]; then
+        [ "$DEBUG" = "1" ] && echo "Non-standard aspect ratio detected: '$aspectratio'."
+        [ "$DEBUG" = "1" ] && echo "Searching for: $query"
+        [ -z "$resolutions" ] && resolutions=$(locate config_displays_resolutions | grep -v .swp)
+        aspectratio=$(grep $query $resolutions | cut -f2 -d"|")
+        if [ -z "$aspectratio" ]; then
+            [ "$DEBUG" = "1" ] && echo "Resolution not found in file. Ignoring."
+        else
+            [ "$DEBUG" = "1" ] && echo "New ratio applied: '$aspectratio'"
+        fi
+    fi
 }
 
 selectoutput(){
-	getdefaults
-	output=$(printf $displays | dmenu -i -p "Outputs")
-	[ -z "$output" ] && exit
+    getdefaults
+    output=$(printf $displays | dmenu -i -p "Outputs")
+    [ -z "$output" ] && exit
+}
+
+
+getactivemonitors(){
+    activemonitors=$(xrandr --listactivemonitors | head -1 | awk '{print $NF}')
 }
 
 selectresolution(){
-	res=$(printf $dmenuitems | dmenu -i -p "Resolutions")
-	if [ "${#res[*]}" -gt 6 ]; then
-		if [ "$output" = "$primary" ]; then
-			xrandr --output $output --mode $res --scale 1x1
-		else
-			pos=$(printf "left-of\\nright-of\\nabove\\nbelow\\nsame-as\\noff" | dmenu -i -p "Position")
-			if [ "$pos" = "off" ]; then
-				xrandr --output $output --$pos
-			elif [ "$pos" = "same-as" ]; then
-				xrandr --output $output --off && xrandr --output $output --mode $res --scale-from $primaryprefres --output $primary
-			elif [ "$pos" != "off" ]; then
-				xrandr --output $output --mode $res --$pos $primary --scale 1x1
-			fi
-		fi
-	elif [ "$res" = "All" ]; then
-		getoutputresolutions
-		dmenuitems=$outputresolutions
-		sanitiseforprintf
-		selectresolution
-	else
-		exit
-	fi
+    res=$(printf $dmenuitems | dmenu -i -p "Resolutions")
+    if [ "${#res[*]}" -gt 6 ]; then
+        if [ "$output" = "$primary" ]; then
+            pos=$(printf "No\\nYes" | dmenu -i -p "Turn off display?")
+            if [ "$pos" = 'No' ]; then
+                xrandr --output $output --mode $res --scale 1x1
+            else
+                getactivemonitors
+                if [ "$activemonitors" -le 1 ]; then
+                    notify-send 'Will not turn off last active monitor'
+                else
+                    pos='off'
+                    xrandr --output $output --$pos
+                fi
+            fi
+        else
+            pos=$(printf "left-of\\nright-of\\nabove\\nbelow\\nsame-as\\noff" | dmenu -i -p "Position (relative to primary display)")
+            if [ "$pos" = "off" ]; then
+                getactivemonitors
+                if [ "$activemonitors" -le 1 ]; then
+                    notify-send 'Will not turn off last active monitor'
+                else
+                    xrandr --output $output --$pos
+                fi
+            elif [ "$pos" = "same-as" ]; then
+                xrandr --output $output --off && xrandr --output $output --mode $res --scale-from $primaryprefres --output $primary
+            elif [ "$pos" != "off" ]; then
+                xrandr --output $output --mode $res --$pos $primary --scale 1x1
+            fi
+        fi
+    elif [ "$res" = "All" ]; then
+        getoutputresolutions
+        dmenuitems=$outputresolutions
+        sanitiseforprintf
+        selectresolution
+    else
+        exit
+    fi
 }
 
 selectoutput
