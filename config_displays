@@ -3,7 +3,7 @@
 #DEBUG=1
 
 getnextoutput(){
-    nextoutput=$(printf "$displays" | awk 'BEGIN { ORS=" " }; {print $1}' | sed '/'$output'/s/.*'$output' \([^ ][^ ]*\)[ ]*.*/\1/') 2>/dev/null
+    nextoutput=$(printf "$displays" | awk 'BEGIN { ORS=" " }; {print $1}' | sed "/$output/s/.*$output \([^ ][^ ]*\)[ ]*.*/\1/") 2>/dev/null
 }
 
 getpreferredresolution(){
