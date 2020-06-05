@@ -9,12 +9,12 @@ The demo does not show resolutions changing as I cannot find a screen recorder t
 
 ## Dependencies
 
-- dmenu
-    - suckless-tools (ubuntu)
-- notify-send
-    - libnotify-bin (ubuntu)
-- xrandr
-    - x11-xserver-utils (ubuntu)
+| Program     | Ubuntu            |
+| ----------- | ----------------- |
+| dmenu       | suckless-tools    |
+| locate      | mlocate           |
+| notify-send | libnotify-bin     |
+| xrandr      | x11-xserver-utils |
 
 ## Install
 
