@@ -12,23 +12,23 @@ The demo does not show resolutions changing as I cannot find a screen recorder t
 | Program     | Ubuntu            |
 | ----------- | ----------------- |
 | dmenu       | suckless-tools    |
-| locate      | mlocate           |
+| find        | findutils         |
 | notify-send | libnotify-bin     |
 | xrandr      | x11-xserver-utils |
 
 ## Install
 
-Move config\_displays to your desired location within $PATH (e.g. $HOME/.local/bin/), ensure script has execute permissions (use `chmod +x config_displays` if not) and run the command after opening a new terminal.
+Move config\_displays to your desired location within [$PATH](https://geek-university.com/linux/path-environment-variable/) (e.g. $HOME/.local/bin/), ensure script has execute permissions (use `chmod +x config_displays` if not) and run the command after opening a new terminal session.
 
 If you just want to test out the script then you can change directory to where it resides and run it with `./config_displays` without needing it in your $PATH.
 
 Optionally, I bound one of my FN keys on my laptop to run the command to make the function more accessible. I achieved this by adding:
-`bindsym XF86Display exec --no-startup-id config_displays "Display Mode"` to my i3 config ($HOME/.config/i3/config), change to a key of your preference and it should work fine.
+`bindsym XF86Display exec --no-startup-id config_displays "Display Mode"` to my i3 config (if you didn't manually install i3 or know what it is then you don't have it), change to a key of your preference and it should work fine.
 
 ### Note:
 
 Due to the use of the locate command to assign the resolutions file to a variable within the script, there's a high chance it won't locate it upon first use. This is because the locate command uses a database to locate files that is only updated on a daily basis.
-If you have superuser privileges, you can update it manually by running `sudo updatedb`, otherwise reboot the system/wait a day and the script will be able to work fine there-on.
+If you have superuser privileges, you can update it manually by running `sudo updatedb`, otherwise **reboot the system/wait a day** and the script will be able to work fine there-on provided you don't move the files again.
 
 ## Features
 
@@ -55,20 +55,35 @@ If you have superuser privileges, you can update it manually by running `sudo up
 
 ## Questionable design choices
 
-- Assigning config\_displays\_resolutions to a variable and using the locate command:
+- Assigning config\_displays\_resolutions to a variable and using the `find` command:
     - I made this decision as testing showed that when the script is ran through the use of a shortcut (i3 config shortcut) rather than through the command-line would result in the `getrelativeresolutions` function returning incorrect results.
 I tried many different ways to overcome this issue and this fix worked.
-Will revist at some point.
+Will revisit at some point.
+
+- using `find` over `locate`:
+    - during testing it was found that `find` could be faster and more CPU efficient than `locate`.
+You can see the test results of mashing enter with the `time` command below:
+
+| command              | time                                        |
+| -------------------- | ------------------------------------------- |
+| find / -name "$file" | 1.89s user 2.73s system 89% cpu 5.138 total |
+| locate "$file"       | 1.12s user 0.15s system 83% cpu 1.510 total |
+| find . -name "$file" | 0.34s user 0.13s system 65% cpu 0.718 total |
 
 ## Assumed F.A.Q's
 
-### *"The program is showing outputs I don't have, why is this?"*
+### *"The program is showing outputs I don't have; why is this?"*
 
-That is due to xrandr's output, not from my script and from what I can surmise, it gets those outputs from /sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0\* or somewhere similar. Regardless, no resolutions will display under those outputs and the script will exit shortly after. A future plan is to devise a way to remove those phantom displays.
+That is due to xrandr's output, not from my script.
+From what I can surmise it gets those outputs from `/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0\*` or somewhere similar.
+Regardless, no resolutions will display under those outputs and the script will exit shortly after.
+A future plan is to devise a way to remove those phantom displays.
 
-### *"The program is showing resolutions that doesn't work, why is that?"*
+### *"The program is showing resolutions that doesn't work; why is that?"*
 
-Again, that is also due to xrandr. I have tried to negate this by adding the aspect ratio function but further down the line I will try to remove resolutions that outright don't work. When I tried those resolutions on my machine, xrandr didn't do anything anyway.
+Again, that is also due to xrandr.
+I have tried to negate this by adding the aspect ratio function but further down the line I will try to remove resolutions that outright don't work.
+When I tried those resolutions on my machine, xrandr didn't do anything anyway.
 
 ### *"Something went wrong and now my screen is black. What can I do?"*
 
@@ -77,11 +92,14 @@ If the screen has only just gone black and you haven't pressed anything since, t
 Simply either press RIGHT once or type 'Yes' and press enter and xrandr should reconfigure the output for you.
 If that doesn't work, restarting the system should reset to defaults.
 
-### *"There's resolutions missing from your document, preventing them being shown to me, when will you fix that?"*
+### *"There's resolutions missing from your document preventing them being shown to me; when will you fix that?"*
 
-All resolutions provided have been sourced from [a Wikipedia article](https://en.wikipedia.org/wiki/List_of_common_resolutions), starting from 640x480 onwards as I doubt many people will be using anything smaller. You can append your own resolutions to the file as long as you follow the same format used within. I would appreciate it if you opened a pull request of your new version of the resolution file if you do so that it can be available for others also.
+All resolutions provided have been sourced from [a Wikipedia article](https://en.wikipedia.org/wiki/List_of_common_resolutions), starting from 640x480 onwards as I doubt many people will be using anything smaller.
+You can append your own resolutions to the file as long as you follow the same format used within.
+I would appreciate it if you opened a pull request of your new version of the resolution file if you do so that it can be available for others also.
 
 ### *"I've noticed a bug or have some improvements to your code, what should I do?"*
 
-You can always open an issue on the Issues tab, or if you have a fix, you may want to fork the project and propose a pull request of your fix.
+You can always open an issue on the Issues tab.
+If you have a fix, you can fork the project and propose a pull request of your fix.
 All help is greatly appreciated.

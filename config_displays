@@ -78,7 +78,7 @@ correctaspectratio(){
     if [ "$aspectratio" != "3:2" -a "$aspectratio" != "4:3" -a "$aspectratio" != "5:4" -a "$aspectratio" != "16:9" -a "$aspectratio" != "16:10" ]; then
         [ "$DEBUG" = "1" ] && echo "Non-standard aspect ratio detected: '$aspectratio'."
         [ "$DEBUG" = "1" ] && echo "Searching for: $query"
-        [ -z "$resolutions" ] && resolutions=$(locate config_displays_resolutions | grep -v .swp)
+        [ -z "$resolutions" ] && resolutions=$(find . -name 'config_displays_resolutions' 2>/dev/null | grep -v .swp)
         aspectratio=$(grep $query $resolutions | cut -f2 -d"|")
         if [ -z "$aspectratio" ]; then
             [ "$DEBUG" = "1" ] && echo "Resolution not found in file. Ignoring."
