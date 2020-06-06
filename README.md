@@ -25,11 +25,6 @@ If you just want to test out the script then you can change directory to where i
 Optionally, I bound one of my FN keys on my laptop to run the command to make the function more accessible. I achieved this by adding:
 `bindsym XF86Display exec --no-startup-id config_displays "Display Mode"` to my i3 config (if you didn't manually install i3 or know what it is then you don't have it), change to a key of your preference and it should work fine.
 
-### Note:
-
-Due to the use of the locate command to assign the resolutions file to a variable within the script, there's a high chance it won't locate it upon first use. This is because the locate command uses a database to locate files that is only updated on a daily basis.
-If you have superuser privileges, you can update it manually by running `sudo updatedb`, otherwise **reboot the system/wait a day** and the script will be able to work fine there-on provided you don't move the files again.
-
 ## Features
 
 - ~~Entirely self-contained within one script, with no need to create external files.~~ Only uses one additional file needed to confirm abnormal aspect ratios. Will be removed if I can find a more efficient solution. 
