@@ -52,7 +52,7 @@ getaspectratio() {
 }
 
 getdefaults(){
-    displays=$(xrandr | grep connected | awk 'BEGIN { ORS=" " }; {print $1}' | sed 's/ /\\n/g')
+    displays=$(xrandr | grep connected | awk 'BEGIN {ORS=" "}; {print $1}' | sed 's/ /\\n/g')
     primary=$(xrandr | grep primary | awk '{print $1}')
     output=$primary
     getnextoutput
