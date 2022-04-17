@@ -3,7 +3,7 @@
 A simple shell script that allows the user to create xrandr commands through dmenu.
 It is currently in a fully working state but I plan to keep developing it further.
 
-![Demo](media/config_displays_demo.gif)
+![Demo](https://raw.githubusercontent.com/WhaleJ84/readme_media/main/config_displays_demo.gif)
 
 The demo does not show resolutions changing as I cannot find a screen recorder that works across resolution changes but it works. Some debug information is left on in the demonstration to show the aspect ratio algorithm in play - this is turned off in the release.
 
